@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 
 const CourseSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   courseName: {
     type: String,
     required: true
