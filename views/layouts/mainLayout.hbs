@@ -14,13 +14,19 @@
 <body>
 
     {{> header}}
-
-
-
     {{{body}}}
 
 
-    <script src=""></script>
+    <script>
+        const btn = document.querySelector(".logo");
+        const nav = document.querySelector(".nav");
+        const ul = document.querySelector(".ul");
+
+        btn.addEventListener("click", function () {
+            nav.classList.toggle("responsive");
+            ul.classList.toggle("responsive");
+        })
+    </script>
 </body>
 
 </html>
