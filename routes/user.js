@@ -6,6 +6,7 @@ const {
   delUserController,
   loginController
 } = require("../controllers/user");
+const checkAuth = require("../middleware/auth");
 
 router.post("/signup", userCreateController);
 

@@ -6,12 +6,13 @@ const {
   listController,
   addCourseController
 } = require("../controllers/courses");
+const checkAuth = require("../middleware/auth");
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
 
 // list all courses
-router.get("/", listController);
+router.get("/", checkAuth, listController);
 
 // add a course
 router.post("/add", addCourseController);

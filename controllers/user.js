@@ -43,32 +43,56 @@ exports.delUserController = async (req, res, next) => {
 };
 
 exports.loginController = async (req, res, next) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
   const user = await User.find({ email: req.body.email });
-  console.log(user);
   if (user < 1) {
     return res.status(401).json({ message: "Authentication Failed" });
   }
 
-  bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-    if (err) {
-      res.status(401).json({ message: "Auth Failed" });
-    }
-    if (result) {
-      const token = jwt.sign(
-        {
-          email: user[0].email,
-          userId: user[0]._id
-        },
-        config.get("JWT_KEY"),
-        {
-          expiresIn: "1h"
-        }
-      );
-      return res.status(200).json({
-        message: "Auth Successful",
-        token: token
-      });
-    }
-    res.status(401).json({ message: "Auth Failed" });
+  const validPassword = await bcrypt.compare(
+    req.body.password,
+    user[0].password
+  );
+  if (!validPassword) return res.status(400).send("Invalid email or password.");
+
+  const token = user[0].generateToken(); // instance method on User-Model
+
+  return res.status(200).json({
+    message: "Authentication Successful",
+    token: token
   });
 };
+
+/* exports.loginController = async (req, res, next) => {
+  const { error } = validate(req.body);
+  if (error) return res.status(400).json({ message: "Invalid Email/Password" });
+
+  const user = await User.find({ email: req.body.email });
+  if (user < 1) {
+    return res.status(401).json({ message: "Authentication Failed" });
+  }
+
+  const validPassword = await bcrypt.compare(
+    req.body.password,
+    user[0].password
+  );
+  if (!validPassword) return res.status(400).send("Invalid email or password.");
+
+  const token = jwt.sign(
+    {
+      email: user[0].email,
+      userId: user[0]._id
+    },
+    config.get("JWT_KEY"),
+    {
+      expiresIn: "1h"
+    }
+  ); // end jwt.sign
+
+  return res.status(200).json({
+    message: "Authentication Successful",
+    token: token
+  });
+}; */
