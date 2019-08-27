@@ -1,12 +1,16 @@
 const express = require("express");
-require("express-async-errors");
 const router = express.Router();
+require("express-async-errors");
+const checkAuth = require("../middleware/auth");
+
 const {
   userCreateController,
   delUserController,
-  loginController
+  loginController,
+  getUser
 } = require("../controllers/user");
-const checkAuth = require("../middleware/auth");
+
+router.get("/me", checkAuth, getUser);
 
 router.post("/signup", userCreateController);
 

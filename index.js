@@ -1,6 +1,8 @@
 const express = require("express");
 const config = require("config");
 const bodyParser = require("body-parser");
+const winston = require("winston");
+const { logger } = require("./middleware/logging");
 const mongoose = require("mongoose");
 const path = require("path");
 const expressHandlebars = require("express-handlebars");
@@ -56,7 +58,16 @@ app.use("/courses", courseRoutes);
 app.use("/users", userRoutes);
 app.use(error);
 
-const port = process.env.PORT || config.get.port;
-app.listen(3001, () => {
-  console.log("App running on Port 3001");
+if (process.env.NODE_ENV !== "production") {
+  logger.add(
+    new winston.transports.Console({
+      format: winston.format.simple()
+    })
+  );
+}
+
+const port = process.env.PORT || config.get("port");
+
+app.listen(port, () => {
+  console.log("App running on Port ${port}");
 });

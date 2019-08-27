@@ -13,6 +13,7 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true }
 });
 
+// do not use arrow func, doesn't have own "this".
 userSchema.methods.generateToken = function() {
   const token = jwt.sign(
     {
