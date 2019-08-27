@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 const config = require("config");
 const jwt = require("jsonwebtoken");
+const PasswordComplexity = require("joi-password-complexity");
 
 const userSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -28,16 +29,22 @@ userSchema.methods.generateToken = function() {
   return token;
 };
 
+const complexityOptions = {
+  min: 5,
+  max: 30,
+  lowerCase: 1,
+  upperCase: 1,
+  numeric: 1,
+  symbol: 1,
+  requirementCount: 5
+};
+
 function validateUser(user) {
   const schema = {
     email: Joi.string()
       .email({ minDomainSegments: 2 })
       .required(),
-    password: Joi.string()
-      .min(4)
-      .alphanum()
-      .strip()
-      .required()
+    password: new PasswordComplexity(complexityOptions)
   };
 
   return Joi.validate(user, schema);
