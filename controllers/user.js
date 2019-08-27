@@ -11,6 +11,7 @@ const config = require("config");
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: false }));
 
+// create new user
 exports.userCreateController = async (req, res, next) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -36,12 +37,14 @@ exports.userCreateController = async (req, res, next) => {
   }
 };
 
+// delete user
 exports.delUserController = async (req, res, next) => {
   const user = await User.findByIdAndRemove(req.params.userId);
   if (!user) return res.status(404).send("The user was not found.");
   res.status(200).json({ message: "User Deleted", user: user });
 };
 
+// login user
 exports.loginController = async (req, res, next) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -58,11 +61,12 @@ exports.loginController = async (req, res, next) => {
   if (!validPassword) return res.status(400).send("Invalid email or password.");
 
   const token = user[0].generateToken(); // instance method on User-Model
+  console.log(token);
 
-  return res.status(200).json({
-    message: "Authentication Successful",
-    token: token
-  });
+  return res
+    .status(200)
+    .header("Bearer", token)
+    .json({ message: "Authentication Successful", token: token });
 };
 
 /* exports.loginController = async (req, res, next) => {
