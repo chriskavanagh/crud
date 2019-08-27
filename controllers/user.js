@@ -1,15 +1,7 @@
-const express = require("express");
 const mongoose = require("mongoose");
 require("express-async-errors");
-const router = express.Router();
 const bcrypt = require("bcrypt");
-const bodyParser = require("body-parser");
 const { User, validate } = require("../model/user");
-const jwt = require("jsonwebtoken");
-const config = require("config");
-
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: false }));
 
 // get user
 exports.getUser = async (req, res) => {
@@ -27,21 +19,17 @@ exports.userCreateController = async (req, res, next) => {
   console.log(user);
   if (user) {
     return res.status(409).json({ message: "Email Already Exists" });
-  } else {
-    bcrypt.hash(req.body.password, 10, async (err, hash) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      } else {
-        const user = new User({
-          _id: new mongoose.Types.ObjectId(),
-          email: req.body.email,
-          password: hash
-        });
-        await user.save();
-        res.status(201).json({ user: user, message: "User Created" });
-      }
-    });
   }
+  user = new User({
+    _id: new mongoose.Types.ObjectId(),
+    email: req.body.email,
+    password: req.body.password
+  });
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+  await user.save();
+  res.status(201).json({ user: user, message: "User Created" });
 };
 
 // delete user

@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     const decoded = jwt.verify(token, config.get("JWT_KEY"));
     req.user = decoded;
     next();
-  } catch (error) {
+  } catch (ex) {
     res.status(401).send("Invalid token.");
   }
 };

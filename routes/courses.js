@@ -8,9 +8,6 @@ const {
 } = require("../controllers/courses");
 const checkAuth = require("../middleware/auth");
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({ extended: false }));
-
 // list all courses
 router.get("/", checkAuth, listController);
 
