@@ -11,7 +11,8 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true
   },
-  password: { type: String, required: true }
+  password: { type: String, required: true },
+  isAdmin: Boolean
 });
 
 // do not use arrow func, doesn't have own "this".
@@ -19,7 +20,8 @@ userSchema.methods.generateToken = function() {
   const token = jwt.sign(
     {
       email: this.email,
-      userId: this._id
+      userId: this._id,
+      isAdmin: this.isAdmin
     },
     config.get("JWT_KEY"),
     {
@@ -36,7 +38,7 @@ const complexityOptions = {
   upperCase: 1,
   numeric: 1,
   symbol: 1,
-  requirementCount: 5
+  requirementCount: 1
 };
 
 function validateUser(user) {
@@ -44,7 +46,8 @@ function validateUser(user) {
     email: Joi.string()
       .email({ minDomainSegments: 2 })
       .required(),
-    password: new PasswordComplexity(complexityOptions)
+    password: new PasswordComplexity(complexityOptions),
+    isAdmin: Joi.boolean()
   };
 
   return Joi.validate(user, schema);

@@ -13,6 +13,7 @@ exports.getUser = async (req, res) => {
 // create new user
 exports.userCreateController = async (req, res, next) => {
   const { error } = validate(req.body);
+
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
@@ -23,7 +24,8 @@ exports.userCreateController = async (req, res, next) => {
   user = new User({
     _id: new mongoose.Types.ObjectId(),
     email: req.body.email,
-    password: req.body.password
+    password: req.body.password,
+    isAdmin: req.body.isAdmin
   });
 
   const salt = await bcrypt.genSalt(10);

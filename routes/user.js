@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 require("express-async-errors");
 const checkAuth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 
 const {
   userCreateController,
@@ -16,6 +17,6 @@ router.post("/signup", userCreateController);
 
 router.post("/login", loginController);
 
-router.delete("/:userId", delUserController);
+router.delete("/delete/:userId", admin, delUserController);
 
 module.exports = router;
