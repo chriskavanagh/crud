@@ -1,6 +1,6 @@
 const express = require("express");
+require("express-async-errors");
 const config = require("config");
-const bodyParser = require("body-parser");
 const winston = require("winston");
 const { logger } = require("./middleware/logging");
 const mongoose = require("mongoose");
@@ -14,23 +14,21 @@ const error = require("./middleware/error");
 const cors = require("cors");
 const app = express();
 
-mongoose.connect(
-  config.get("db"),
-  { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false },
-  error => {
-    if (!error) {
-      console.log("Connected To DB");
-    } else {
-      console.log("DB Connection Error");
-    }
-  }
-);
+mongoose
+  .connect(config.get("db"), {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false
+  })
+  .then(res => console.log(`Connected To DB ${config.get("db")}`))
+  .catch(error => console.error(error));
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: false }));
 
 app.set("views", path.join(__dirname, "/views/"));
 app.engine(
@@ -71,5 +69,5 @@ if (process.env.NODE_ENV !== "production") {
 const port = process.env.PORT || config.get("port");
 
 app.listen(port, () => {
-  console.log("App running on Port ${port}");
+  console.log(`App running on Port ${port}`);
 });
