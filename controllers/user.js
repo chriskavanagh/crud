@@ -13,14 +13,11 @@ exports.getUser = async (req, res) => {
 // create new user
 exports.userCreateController = async (req, res, next) => {
   const { error } = validate(req.body);
-
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
-  console.log(user);
-  if (user) {
-    return res.status(409).json({ message: "Email Already Exists" });
-  }
+  if (user) return res.status(409).json({ message: "Email Already Exists" });
+
   user = new User({
     _id: new mongoose.Types.ObjectId(),
     email: req.body.email,
